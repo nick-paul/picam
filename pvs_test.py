@@ -1,4 +1,4 @@
-from PiVideoStream import PiVideoStream
+from PiHDRVideoStream import PiHDRVideoStream
 from picamera import PiCamera
 import cv2
 import time
@@ -8,12 +8,13 @@ import time
 # camera.framerate = 32
 
 
-vs = PiVideoStream().start()
-time.sleep(2.0)
+vs = PiHDRVideoStream(expseq=[0,600000], isoseq=[100,800], framerate=20).start()
+#time.sleep(2.0)
 
 while True:
     frame = vs.read()
     cv2.imshow('Preview', frame)
+    #print(vs.camera.shutter_speed)
 
     key = cv2.waitKey(1) & 0xff
 
