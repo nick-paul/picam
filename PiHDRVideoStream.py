@@ -13,6 +13,9 @@ class PiHDRVideoStream:
             framerate=62,
             expseq=[0,15000,30000],
             isoseq=[100,400,800]):
+        if len(expseq) != len(isoseq):
+            raise ValueError("len(expseq) != len(isoseq)")
+
         # initialize the camera and stream
         self.camera = PiCamera()
         self.camera.resolution = resolution
@@ -27,6 +30,10 @@ class PiHDRVideoStream:
         self.camera.awb_mode = 'off'
         self.camera.awb_gains = gains
 
+        self.frameseq = []
+        for _ in range(len(expseq)):
+            self.frameseq.append(PiRGBArray(self.camera, size=resolution))
+
         self.zeroCap= PiRGBArray(self.camera, size=resolution)
         self.rawCapture= PiRGBArray(self.camera, size=resolution)
         self.stream = self.camera.capture_continuous(self.rawCapture,
@@ -37,10 +44,10 @@ class PiHDRVideoStream:
         self.stopped = False
         self.frameready = True
         self.que = Queue(maxsize=3)
-        
+
         self.expseq = expseq
         self.isoseq = isoseq
-        self.exp_idx = 0
+        self.idx = 0
 
     def start(self):
         # start the thread to read frames from the video stream
@@ -48,42 +55,43 @@ class PiHDRVideoStream:
         return self
 
     def update(self):
-        # keep looping infinitely until the thread is stopped
-        for f in self.stream:
-            
-            # idx = self.exp_idx % 4 #len(self.expseq)
-            # if idx < 2:
-            #     idx = 0
-            # else:
-            #     idx = 1
+        try:
+            # keep looping infinitely until the thread is stopped
+            for f in self.stream:
 
-            idx = self.exp_idx % 2
-            self.exp_idx += 1
+                self.frameseq[self.idx] = f.array
 
-            self.camera.iso = self.isoseq[idx]
-            self.camera.shutter_speed = self.expseq[idx]
 
-            print(self.camera.shutter_speed, self.camera.iso)
-            
-            if idx == 0:
-                self.zeroCap = f.array 
-            else:
-                newFrame = PiRGBArray(self.camera, self.camera.resolution)
+                if self.idx == len(self.expseq)-1:
+                    calibrate = cv2.createCalibrateDebevec()
+                    response = calibrate.process(self.frameseq, self.expseq)
+                    merge_debevec = cv2.createMergeDebevec()
+                    hdr= merge_debevec.process(
+                            self.frameseq,
+                            self.expseq,
+                            response)
 
-                newFrame[0:100, 0:-1] = self.zeroCap[0:100, 0:-1]
-                newFrame[100:-1, 0:-1] = f[100:-1, 0:-1]
+                    self.que.put(hdr.array)
 
-                self.que.put(newFrame.array)
+                self.rawCapture.truncate(0)
 
-            self.rawCapture.truncate(0)
+                # if the thread indicator variable is set, stop the thread
+                # and resource camera resources
+                if self.stopped:
+                    break
 
-            # if the thread indicator variable is set, stop the thread
-            # and resource camera resources
-            if self.stopped:
-                self.stream.close()
-                self.zeroCap.close()
-                self.camera.close()
-                return
+                self.idx += 1
+                self.idx = self.idx % len(self.expseq)
+
+                self.camera.iso = self.isoseq[self.idx]
+                self.camera.shutter_speed = self.expseq[self.idx]
+
+                print(self.idx, self.camera.exposure_speed, self.camera.iso)
+        finally:
+            self.stream.close()
+            self.rawCapture.close()
+            self.camera.close()
+
 
     def read(self):
         # return the frame most recently read

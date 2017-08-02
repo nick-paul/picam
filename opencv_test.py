@@ -29,7 +29,7 @@ def loop():
 #camera = PiCamera()
 
 cv.namedWindow('preview')
-capture = cv.VideoCapture(-1)
+capture = cv.VideoCapture(0)
 
 camera = PiCamera()
 

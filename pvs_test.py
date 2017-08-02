@@ -9,9 +9,9 @@ import time
 
 
 vs = PiHDRVideoStream(
-        expseq=[9,60000],
-        isoseq=[100,100], 
-        framerate=60).start()
+        expseq=[9,6000, 30000],
+        isoseq=[100,100, 100],
+        framerate=10).start()
 #time.sleep(2.0)
 
 try:
