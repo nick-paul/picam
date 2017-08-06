@@ -21,6 +21,7 @@ class PiVideoStream:
         gains = self.camera.awb_gains
         self.camera.awb_mode = 'off'
         self.camera.awb_gains = gains
+        self.camera.image_denoise = False
 
         self.rawCapture = PiRGBArray(self.camera, size=resolution)
         self.stream = self.camera.capture_continuous(self.rawCapture,
@@ -42,7 +43,7 @@ class PiVideoStream:
     def update(self):
         # keep looping infinitely until the thread is stopped
         for f in self.stream:
-            print(self.camera.iso, self.camera.shutter_speed)
+            print(self.camera.iso, self.camera.shutter_speed, self.camera.exposure_compensation)
             # grab the frame from the stream and clear the stream in
             # preparation for the next frame
             self.que.put(f.array)

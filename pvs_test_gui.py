@@ -40,6 +40,13 @@ scale_swap_frames = Scale(master,
         orient=HORIZONTAL)
 scale_swap_frames.pack()
 
+scale_ev = Scale(master,
+        from_=-20,
+        to=20,
+        label='ev',
+        orient=HORIZONTAL)
+scale_ev.pack()
+
 vs.start()
 
 framecount = 0
@@ -53,13 +60,14 @@ try:
         key = cv2.waitKey(1) & 0xff
         if key == ord('q'):
             break
-        
+
         master.update()
-        
+
         vs.camera.iso = scale_iso.get()
-        
+        vs.camera.exposure_compensation = scale_ev.get()
+
         swap_frames = scale_swap_frames.get()
-        if framecount % (swap_frames*2) > swap_frames:
+        if swap_frames == 1 or framecount % (swap_frames*2) > swap_frames:
             vs.camera.shutter_speed = shutter_speed1.get()
         else:
             vs.camera.shutter_speed = shutter_speed2.get()
