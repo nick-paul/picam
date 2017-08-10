@@ -5,7 +5,7 @@ import time
 
 from Tkinter import *
 
-vs = PiVideoStream()
+vs = PiVideoStream(resolution=(640,480))
 
 master = Tk()
 scale_iso = Scale(master,
@@ -47,6 +47,22 @@ scale_ev = Scale(master,
         orient=HORIZONTAL)
 scale_ev.pack()
 
+global save_next_frame
+save_next_frame = False
+
+def saveNextFrame():
+    global save_next_frame
+    save_next_frame = True
+
+btn_saveNextFrame = Button(master,
+        text='save',
+        command=saveNextFrame)
+btn_saveNextFrame.pack()
+
+entry_file_prefix = Entry(master, bd=5)
+entry_file_prefix.pack()
+
+
 vs.start()
 
 framecount = 0
@@ -56,6 +72,17 @@ try:
     while True:
         framecount += 1
         frame = vs.read()
+
+        if save_next_frame:
+            save_next_frame = False
+            filename = 'imgs/%s_iso%d_ss%d.jpg' % (
+                        entry_file_prefix.get(),
+                        vs.camera.iso,
+                        vs.camera.shutter_speed)
+            cv2.imwrite(filename, frame)
+
+            print('File saved: %s' % filename)
+
         cv2.imshow('Preview', frame)
         key = cv2.waitKey(1) & 0xff
         if key == ord('q'):
