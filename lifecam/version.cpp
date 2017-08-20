@@ -22,7 +22,7 @@ void printVersion() {
 }
 
 int main() {
+    // Just print version
     printVersion();
-
     return 0;
 }
