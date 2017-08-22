@@ -1,15 +1,20 @@
 #include <iostream>
 #include <vector>
+#include <algorithm>
 
-#include "opencv2/core.hpp"
-#include "opencv2/imgproc.hpp"
-#include "opencv2/photo/photo.hpp"
+//#include "opencv2/core.hpp"
+//#include "opencv2/imgproc.hpp"
+//#include "opencv2/photo/photo.hpp"
+//
+//#include "opencv2/photo.hpp"
+//#include "opencv2/imgcodecs.hpp"
+//#include "opencv2/highgui.hpp"
+//#include "opencv2/videoio.hpp"
+//#include "opencv2/opencv.hpp"
 
-#include "opencv2/highgui/highgui.hpp"
-#include "opencv2/videoio.hpp"
-#include "opencv2/photo.hpp"
+#include <opencv2/photo.hpp>
 #include "opencv2/imgcodecs.hpp"
-#include "opencv2/opencv.hpp"
+#include <opencv2/highgui.hpp>
 
 using namespace std;
 using namespace cv;
@@ -28,6 +33,15 @@ int main() {
     // Exposure Times
     vector<float> times{0.0f, 0.001f, 10.0f};
     vector<Mat> frames(3);
+
+    cout << "Using exposure times: { "; 
+    for (const float& f : times) {
+        cout << f << " ";
+    }
+    cout << "}" << endl << flush;
+
+
+
 
     // Open webcam
     VideoCapture cap(1);
@@ -67,7 +81,9 @@ int main() {
     Ptr<MergeMertens> merge_mertens = createMergeMertens();
     merge_mertens->process(frames, fusion);
 
-
+    imwrite("fusion.png", fusion * 255);
+    imwrite("ldr.png", ldr * 255);
+    imwrite("hdr.hdr", hdr);
 
     return 0;
 }
