@@ -31,6 +31,39 @@ void getExposureTimes(int argc, char* argv[], vector<float>& times) {
     }
 }
 
+void hdrFrame(VideoCapture& cap,
+        const vector<float>& times,
+        vector<Mat>& frames) {
+
+    // Grab frames
+    int count = 0;
+    while (count < times.size()) {
+        cap.set(CAP_PROP_EXPOSURE, times[count]);
+        cap.read(frames[count]);
+        count++;
+    }
+
+    Mat response;
+    Ptr<CalibrateDebevec> calibrate = createCalibrateDebevec();
+    calibrate->process(frames, response, times);
+
+    Mat hdr;
+    Ptr<MergeDebevec> merge_debevec = createMergeDebevec();
+    merge_debevec->process(frames, hdr, times, response);
+
+    Mat ldr;
+    Ptr<TonemapDurand> tonemap = createTonemapDurand(2.2f);
+    tonemap->process(hdr, ldr);
+
+    Mat fusion;
+    Ptr<MergeMertens> merge_mertens = createMergeMertens();
+    merge_mertens->process(frames, fusion);
+
+    imshow("fusion", fusion);
+    imwrite("fusion.png", fusion * 255);
+    waitKey(0);
+}
+
 int main(int argc, char* argv[]) {
     printVersion();
 
@@ -61,38 +94,8 @@ int main(int argc, char* argv[]) {
     cap.set(CAP_PROP_AUTO_EXPOSURE, 0.25);
     cap.set(CV_CAP_PROP_FPS, 1);
 
-    // Grab frames
-    int count = 0;
     vector<Mat> frames(times.size());
-    while (count < 3) {
-        cap.set(CAP_PROP_EXPOSURE, times[count]);
-        cap.read(frames[count]);
-        count++;
-    }
-
-    // Process HDR
-    // This code will not compile bcause it requires v3.3.0
-    ///////////////////////////////////////////////////////
-
-    Mat response;
-    Ptr<CalibrateDebevec> calibrate = createCalibrateDebevec();
-    calibrate->process(frames, response, times);
-
-    Mat hdr;
-    Ptr<MergeDebevec> merge_debevec = createMergeDebevec();
-    merge_debevec->process(frames, hdr, times, response);
-
-    Mat ldr;
-    Ptr<TonemapDurand> tonemap = createTonemapDurand(2.2f);
-    tonemap->process(hdr, ldr);
-
-    Mat fusion;
-    Ptr<MergeMertens> merge_mertens = createMergeMertens();
-    merge_mertens->process(frames, fusion);
-
-    imwrite("fusion.png", fusion * 255);
-    imwrite("ldr.png", ldr * 255);
-    imwrite("hdr.hdr", hdr);
+    hdrFrame(cap, times, frames); 
 
     return 0;
 }
