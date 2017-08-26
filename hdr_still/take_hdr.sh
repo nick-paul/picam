@@ -1,7 +1,7 @@
 #!/bin/bash
 
 NOW=$(date +"%m_%d_%y__%H_%M_%S")
-mkdir $NOW
+mkdir -p stills/${NOW}
 
 echo raspistill -w 320 -h 240 -o stills/${NOW}/std.png
 
