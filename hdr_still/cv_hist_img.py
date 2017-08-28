@@ -27,21 +27,29 @@ for i in range(len(sys.argv) - 2):
     print('   ', f)
 print('---')
 
-numfiles = len(imgfiles) 
+numfiles = len(imgfiles)
 
-f, axarr = plt.subplots(len(imgfiles), figsize=(5, 2*numfiles), sharex=True)
+f, axarr = plt.subplots(numfiles, 2, figsize=(5, 2*numfiles), sharex='col')
 
 color = ('b','g','r')
-for ax, imgfile in zip(axarr, imgfiles):
+for ax_idx, imgfile in zip(range(numfiles), imgfiles):
     # print('reading ', imgfile)
     img = cv2.imread(imgfile)
+    imgax = axarr[ax_idx, 0]
+    imgax.imshow(img)
+    imgax.axis('off')
+    imgax.set_yticklabels([])
+    imgax.set_xticklabels([])
+
+    histax = axarr[ax_idx, 1]
 
     for i,col in enumerate(color):
         histr = cv2.calcHist([img],[i],None,[256],[0,256])
-        ax.plot(histr,color = col)
+        histax.plot(histr,color = col)
 
-    ax.set_xlim([0,256])
-    ax.set_title(titlename(imgfile))
+    histax.set_xlim([0,256])
+    histax.set_title(titlename(imgfile))
+    histax.set_yticklabels([])
 
 plt.tight_layout()
 
