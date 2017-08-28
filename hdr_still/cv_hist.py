@@ -24,6 +24,8 @@ for i in range(len(sys.argv) - 2):
     if 'hist' in f:
         continue
     imgfiles.append(f)
+    print('   ', f)
+print('---')
 
 f, axarr = plt.subplots(len(imgfiles), figsize=(5, 8), sharex=True)
 
@@ -42,7 +44,11 @@ for ax, imgfile in zip(axarr, imgfiles):
 plt.tight_layout()
 
 imgdir = os.path.dirname(sys.argv[2])
-outfilename = imgdir + '/' + sys.argv[1] + '.png'
+# output filename
+outfile = sys.argv[1]
+# if we are in a dir, append it
+if imgdir != '':
+    outfile = imgdir + '/' + outfile
 
-plt.savefig(outfilename)
+plt.savefig(outfile)
 #plt.show()
