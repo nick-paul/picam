@@ -11,14 +11,16 @@ def titlename(f):
     else:
         return fname
 
-if len(sys.argv) <= 2:
+if len(sys.argv) <= 3:
     print('no files in directory')
     exit(0)
 
+
 imgfiles = []
 
-for i in range(len(sys.argv) - 1):
-    f = sys.argv[i+1]
+# Loop through 2-N
+for i in range(len(sys.argv) - 2):
+    f = sys.argv[i+2]
     if 'hist' in f:
         continue
     imgfiles.append(f)
@@ -37,7 +39,10 @@ for ax, imgfile in zip(axarr, imgfiles):
     ax.set_xlim([0,256])
     ax.set_title(titlename(imgfile))
 
-imgdir = os.path.dirname(sys.argv[1])
 plt.tight_layout()
-plt.savefig(imgdir + '/hist.png')
+
+imgdir = os.path.dirname(sys.argv[2])
+outfilename = imgdir + '/' + sys.argv[1] + '.png'
+
+plt.savefig(outfilename)
 #plt.show()
