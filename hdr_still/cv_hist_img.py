@@ -11,7 +11,7 @@ def titlename(f):
     else:
         return fname
 
-if len(sys.argv) <= 3:
+if len(sys.argv) <= 2:
     print('no files in directory')
     exit(0)
 

@@ -2,11 +2,11 @@
 
 echo "------ [ begin gen_hists.sh ] -------"
 
-HELP_TEXT='gen_hists allhdr|clahe|stdhdr img|noimg'
+HELP_TEXT='gen_hists allhdr|clahe|stdhdr img|noimg png|eps'
 
-if [ $# -lt 2 ];
+if [ $# -lt 3 ];
 then
-    echo "needs 2 arguments"
+    echo "needs 3 arguments"
     echo $HELP_TEXT
     exit 1
 fi
@@ -28,6 +28,20 @@ else
     exit 1
 fi
 
+if [ $3 == png ];
+then
+    echo "filetype: png"
+    FILETYPE=png
+elif [ $3 == eps ];
+then
+    echo "filetype: eps"
+    FILETYPE=eps
+else
+    echo "invalid filetype: $3"
+    echo $HELP_TEXT
+    exit 1
+fi
+
 
 CLAHE_HIST_FILES=(std.jpg hdr.jpg std_clahe.jpg hdr_clahe.jpg)
 STD_HDR_HIST_FILES=(std.jpg hdr.jpg)
@@ -43,7 +57,7 @@ else
     CV_HIST_PY=$(realpath cv_hist.py)
 fi
 
-FIGNAME="${FIGNAME}.png"
+FIGNAME="${FIGNAME}.${FILETYPE}"
 
 if [ $TYPE == allhdr ];
 then
