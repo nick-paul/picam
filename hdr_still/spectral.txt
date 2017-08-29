@@ -1,0 +1,1 @@
+python spectral.py stills/08_26_17__22_23_52/hdr.jpg spectral_hdr.png
