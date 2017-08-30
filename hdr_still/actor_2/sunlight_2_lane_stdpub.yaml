@@ -1,0 +1,35 @@
+!!python/object/new:dynamic_reconfigure.encoding.Config
+dictitems:
+  cc_alpha: 0.8
+  cc_beta: -51.0
+  clahe_clip: 2
+  enable_clahe: false
+  enable_color_correct: true
+  enable_sharpen: false
+  groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+    dictitems:
+      cc_alpha: 0.8
+      cc_beta: -51.0
+      clahe_clip: 2
+      enable_clahe: false
+      enable_color_correct: true
+      enable_sharpen: false
+      groups: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      id: 0
+      name: Default
+      parameters: !!python/object/new:dynamic_reconfigure.encoding.Config
+        state: []
+      parent: 0
+      sharp_kernel: 1
+      sharp_weight: 0.5
+      show_origional: true
+      show_output: false
+      state: true
+      type: ''
+    state: []
+  sharp_kernel: 1
+  sharp_weight: 0.5
+  show_origional: true
+  show_output: false
+state: []
