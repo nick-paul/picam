@@ -1,0 +1,11 @@
+(0, 'CLAHE.jpg')
+(1, 'Debevec.jpg')
+(2, 'Mertens Fusion.jpg')
+(3, 'Robertson.jpg')
+(4, 'Single Exposure.jpg')
+---
+('CLAHE.jpg', 132.70136718750001, 70.649664558987567)
+('Debevec.jpg', 115.83240885416667, 54.705859053398825)
+('Mertens Fusion.jpg', 113.54613281250001, 49.397557419929967)
+('Robertson.jpg', 132.03248697916666, 52.190063802416944)
+('Single Exposure.jpg', 98.002200520833327, 86.655294022563169)
