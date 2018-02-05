@@ -22,7 +22,7 @@ std::atomic<bool> grabOn; //this is lock free
 void GrabThread(VideoCapture *cap)
 {
     Mat tmp;
-    vector<float> times{0, 0.0001, 0.01};
+    vector<float> times{0.0, 1.0, 2.0};
     int counter = 0;
 
     //To know how many memory blocks will be allocated to store frames in the queue.
@@ -35,12 +35,15 @@ void GrabThread(VideoCapture *cap)
     while (grabOn.load() == true) //this is lock free
     {
 
-        cap->set(CAP_PROP_EXPOSURE, times[counter % times.size()]);
-
         //grab will wait for cam FPS
         //keep grab out of lock so that 
         //idle time can be used by other threads
         *cap >> tmp; //this will wait for cam FPS
+
+
+        //int r = rand() % 2 == 0 ? rand() : 0;
+        //cap->set(CAP_PROP_EXPOSURE, r); // times[counter % times.size()]);
+        cap->set(CAP_PROP_EXPOSURE, times[counter % times.size()]);
 
         if (tmp.empty()) {
             cout << "no frame" << endl;
@@ -153,6 +156,6 @@ int main() {
             break; //exit from process loop
         }
     }
-    cout << endl << "Press Enter to terminate"; cin.get();
+    //cout << endl << "Press Enter to terminate"; cin.get();
     return 0;
 }

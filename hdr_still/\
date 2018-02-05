@@ -1,0 +1,99 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <string>
+#include <sstream>
+
+#include <opencv2/photo.hpp>
+#include "opencv2/imgcodecs.hpp"
+#include <opencv2/highgui.hpp>
+
+using namespace std;
+using namespace cv;
+
+#define INTERACTIVE true
+
+#define PREVIEW_WINDOW "HDR Preview"
+
+void printVersion() {
+    cout << "Using OpenCV v"
+        << CV_MAJOR_VERSION << "."
+        << CV_MINOR_VERSION << "."
+        << CV_SUBMINOR_VERSION << endl;
+}
+
+int e1,e2,e3,e4;
+vector<Mat> frames;
+
+void procHDR(int,void*) {
+
+    Mat fusion;
+    Ptr<MergeDebevec> ev_merge = createMergeDebevec();
+
+    /* Exposure values @ f/3.2
+     * iso100, ss1       : 11.67
+     * iso100, ss300     : 12.33
+     * iso200, ss2000,   : 14.33
+     * iso400, ss 15000  : 16.33
+     */
+    //vector<float> e_times = {1.0f/3.0f, 1.0f/30.0f, 1.0f/80.0f, 1.0f/140.0f};
+    vector<float> e_times = {
+        1.0f/(float)e1,
+        1.0f/(float)e2,
+        1.0f/(float)e3,
+        1.0f/(float)e4
+    };
+
+    ev_merge->process(frames, fusion, e_times);
+
+    if (INTERACTIVE) imshow(PREVIEW_WINDOW, fusion);
+    //if (!INTERACTIVE) {
+        //imwrite(newfile, fusion * 255);
+        //cout << "Wrote file " << newfile << endl;
+    //}
+    //if (INTERACTIVE) waitKey(0);
+}
+
+
+void loadFrames(const vector<string>& file) {
+    for (int i = 0; i < frames.size(); i++) {
+        frames.push_back(imread(files[i]));
+    }
+}
+
+int main(int argc, char* argv[]) {
+    if (INTERACTIVE) printVersion();
+
+    vector<string> files(argv + 1, argv + argc);
+
+    if (INTERACTIVE) {
+        for (string file : files) {
+            cout << file << endl;
+        }
+    }
+
+    // Load images
+    loadFrames(files);
+    cout << "loaded " << frames.size() << " frames!" << endl;
+
+    // Create HDR image
+    string str = files[0];
+    int chr_idx= str.find_last_of("/");
+    string newfile = str.substr(0, chr_idx) + "/hdr_debevec.jpg";
+
+    // Init Sliders
+    e1 = 3;
+    e2 = 30;
+    e3 = 80;
+    e4 = 140;
+
+    // Create window
+    namedWindow(PREVIEW_WINDOW, 1);
+
+    // Create trackbars
+    createTrackbar("e1", PREVIEW_WINDOW, &e1, 200, procHDR);
+
+    procHDR(e1, 0);
+
+    return 0;
+}

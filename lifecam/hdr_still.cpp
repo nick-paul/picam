@@ -87,7 +87,8 @@ int main(int argc, char* argv[]) {
     // Open webcam
     VideoCapture cap(1);
     if (!cap.isOpened()) {
-        cout << "cannot open stream" << endl;
+        cerr << "cannot open stream" << endl;
+        return -1;
     }
 
     // Manual exposure

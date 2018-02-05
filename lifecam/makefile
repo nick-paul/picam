@@ -10,4 +10,4 @@ CFLAGS = -I/usr/local/include/opencv2 -I/usr/local/include
 LIBS = -L/usr/lib -lopencv_core -lopencv_imgproc -lopencv_objdetect -lopencv_highgui -lopencv_videoio -lopencv_features2d -lopencv_imgcodecs -lopencv_photo
 
 % : %.cpp
-	g++ $(CFLAGS) --std=c++11 -o $@ $< $(LIBS)
+	g++ $(CFLAGS) --std=c++11 -pthread -o $@ $< $(LIBS)

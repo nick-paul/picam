@@ -22,7 +22,7 @@ void printVersion() {
         << CV_SUBMINOR_VERSION << endl;
 }
 
-int e1,e2,e3,e4;
+int e1,e2,e3;
 vector<Mat> frames;
 string out_filename;
 
@@ -43,7 +43,6 @@ void procHDR(int,void*) {
         (float)e1*0.04f,
         (float)e2*0.04f,
         (float)e3*0.04f,
-        (float)e4*0.04f
     };
 
     Mat response;
@@ -77,8 +76,8 @@ void procHDR(int,void*) {
         imshow(PREVIEW_WINDOW, ldr);
     }
     //if (!INTERACTIVE) {
-        //imwrite(out_filename, ldr * 255);
-        //cout << "Wrote file " << out_filename << endl;
+        imwrite(out_filename, ldr * 255);
+        cout << "Wrote file " << out_filename << endl;
     //}
     //if (INTERACTIVE) waitKey(0);
 }
@@ -111,10 +110,9 @@ int main(int argc, char* argv[]) {
     out_filename = str.substr(0, chr_idx) + "/hdr_robertson.jpg";
 
     // Init Sliders
-    e1 = 1;
-    e2 = 84;
-    e3 = 700;
-    e4 = 8000;
+    e1 = 839;
+    e2 = 1191;
+    e3 = 0;
 
     // Create window
     namedWindow(PREVIEW_WINDOW, 1);
@@ -123,7 +121,6 @@ int main(int argc, char* argv[]) {
     createTrackbar("e1", PREVIEW_WINDOW, &e1, 1200, procHDR);
     createTrackbar("e2", PREVIEW_WINDOW, &e2, 1200, procHDR);
     createTrackbar("e3", PREVIEW_WINDOW, &e3, 1200, procHDR);
-    createTrackbar("e4", PREVIEW_WINDOW, &e4, 1200, procHDR);
 
     procHDR(e1, 0);
 

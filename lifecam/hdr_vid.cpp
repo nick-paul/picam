@@ -35,34 +35,29 @@ void hdrFrame(VideoCapture& cap,
         const vector<float>& times,
         vector<Mat>& frames) {
 
+
+    
     // Grab frames
     int count = 0;
     while (count < times.size()) {
-        cap.set(CAP_PROP_EXPOSURE, times[count]);
+        //cap.set(CAP_PROP_EXPOSURE, times[count]);
         cap.read(frames[count]);
-        cout << "Frame read: " << count << endl << flush;
+        // cout << "Frame read: " << count << endl << flush;
+        imshow("mid", frames[count]);
+        //waitKey(10);
         count++;
     }
 
-    /* Mat response; */
-    /* Ptr<CalibrateDebevec> calibrate = createCalibrateDebevec(); */
-    /* calibrate->process(frames, response, times); */
-
-    /* Mat hdr; */
-    /* Ptr<MergeDebevec> merge_debevec = createMergeDebevec(); */
-    /* merge_debevec->process(frames, hdr, times, response); */
-
-    /* Mat ldr; */
-    /* Ptr<TonemapDurand> tonemap = createTonemapDurand(2.2f); */
-    /* tonemap->process(hdr, ldr); */
-
+    
+    /*
     Mat fusion;
     Ptr<MergeMertens> merge_mertens = createMergeMertens();
     merge_mertens->process(frames, fusion);
 
     imshow("fusion", fusion);
-    /* imwrite("fusion.png", fusion * 255); */
+    imwrite("fusion.png", fusion * 255);
     waitKey(20);
+    */
 }
 
 int main(int argc, char* argv[]) {
@@ -93,11 +88,12 @@ int main(int argc, char* argv[]) {
 
     // Manual exposure
     cap.set(CAP_PROP_AUTO_EXPOSURE, 0.25);
-    cap.set(CV_CAP_PROP_FPS, 30);
+    cap.set(CV_CAP_PROP_FPS, 25);
 
     vector<Mat> frames(times.size());
 
-    for (int i = 0; i < 3; i++) {
+    int iters = 10;
+    for (int i = 0; i < iters; i++) {
         hdrFrame(cap, times, frames); 
     }
 

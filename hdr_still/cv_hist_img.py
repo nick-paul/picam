@@ -21,6 +21,7 @@ imgfiles = []
 # Loop through 2-N
 for i in range(len(sys.argv) - 2):
     f = sys.argv[i+2]
+    print(i, f)
     if 'hist' in f:
         continue
     imgfiles.append(f)
@@ -28,6 +29,7 @@ for i in range(len(sys.argv) - 2):
 print('---')
 
 numfiles = len(imgfiles)
+print(numfiles)
 
 f, axarr = plt.subplots(numfiles, 2, figsize=(5, 2*numfiles), sharex='col')
 
@@ -58,7 +60,8 @@ imgdir = os.path.dirname(sys.argv[2])
 outfile = sys.argv[1]
 # if we are in a dir, append it
 if imgdir != '':
-    outfile = imgdir + '/' + outfile
+    outfile = imgdir + '/_' + outfile
 
+print('saving to', outfile)
 plt.savefig(outfile)
 #plt.show()
